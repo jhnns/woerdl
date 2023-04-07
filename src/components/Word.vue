@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import Character from "./Character.vue";
+import { ValidationState } from "../game.js";
 
 const props = defineProps<{
   wantedWord: string;
+  validationStates?: Array<ValidationState>;
   disabled?: boolean;
 }>();
 const emit = defineEmits<{
-  (e: "submit", word: string): void;
+  (e: "submit", event: { word: string }): void;
 }>();
 
-const indices = ref(Array.from({ length: 5 }, (_, i) => i));
+const indices = ref(Array.from(props.wantedWord, (_, i) => i));
 const word = ref("");
 const handleInput = (event: Event) => {
   word.value = (event.target as HTMLInputElement).value.toUpperCase();
 };
 const handleSubmit = () => {
   if (word.value.length === props.wantedWord.length) {
-    emit("submit", word.value);
+    emit("submit", { word: word.value });
   }
 };
 </script>
@@ -25,7 +27,11 @@ const handleSubmit = () => {
 <template>
   <form @submit.prevent="handleSubmit">
     <label class="word">
-      <Character v-for="index in indices" :character="word.charAt(index)" />
+      <Character
+        v-for="index in indices"
+        :character="word.charAt(index)"
+        :validation-state="props.validationStates?.[index]"
+      />
       <input
         class="word-input"
         v-model="word"

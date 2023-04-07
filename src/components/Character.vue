@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ValidationState } from "../game.js";
 
-const props = defineProps<{ character: string }>();
-
-const count = ref(0);
+const props = defineProps<{
+  character: string;
+  validationState?: ValidationState;
+}>();
 </script>
 
 <template>
-  <div class="character">{{ props.character }}</div>
+  <div
+    class="character"
+    :class="props.validationState && `character--${props.validationState}`"
+  >
+    {{ props.character }}
+  </div>
 </template>
 
 <style scoped>
@@ -16,7 +22,22 @@ const count = ref(0);
   height: 6rem;
   font-size: 4rem;
   text-align: center;
-  background-color: hsla(199, 85%, 66%, 0.196);
+  background-color: hsla(199, 85%, 66%, 0.2);
   border: 2px solid hsla(199, 85%, 66%, 0.4);
+}
+
+.character--position-and-character-correct {
+  background-color: hsla(141, 85%, 66%, 0.2);
+  border-color: hsla(141, 85%, 66%, 0.4);
+}
+
+.character--character-correct {
+  background-color: hsla(54, 85%, 66%, 0.2);
+  border-color: hsla(54, 85%, 66%, 0.4);
+}
+
+.character--incorrect {
+  background-color: hsla(0, 52%, 36%, 0.2);
+  border-color: hsla(0, 52%, 36%, 0.4);
 }
 </style>
