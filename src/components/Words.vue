@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, onMounted, reactive } from "vue";
 import Word from "./Word.vue";
 import { ValidationState } from "../game.js";
 import { solvedWords, wantedWord } from "../lib/words.js";
 
 type WordRow = {
-  index: number;
   word: string;
   validationStates?: Array<ValidationState>;
 };
 
-const wordRows = reactive(
-  Array.from(
-    { length: 6 },
-    (_, index): WordRow => ({
-      index,
-      word: "",
-      validationStates: undefined,
-    })
-  )
-);
-const currentIndex = ref(0);
+const wordRows = reactive<Array<WordRow>>([]);
+const addWord = () => {
+  wordRows.push({
+    word: "",
+  });
+};
+onMounted(() => {
+  addWord();
+});
+
 const validateWordRow = ({ word }: WordRow) => {
   const validationStates = word.split("").map((character, index) => {
     const wantedCharacter = wantedWord.value.charAt(index);
@@ -34,10 +32,11 @@ const validateWordRow = ({ word }: WordRow) => {
 
   return validationStates;
 };
-const currentWordRow = computed(() => wordRows[currentIndex.value]);
 const isFinished = computed(() => {
+  const lastWordRow = wordRows.at(-1);
+
   return (
-    currentWordRow.value.validationStates?.every(
+    lastWordRow?.validationStates?.every(
       (validationState) =>
         validationState === ValidationState.PositionAndCharacterCorrect
     ) === true
@@ -50,20 +49,32 @@ const handleSubmit = (wordRow: WordRow, word: string) => {
     solvedWords.add(word);
     return;
   }
-  currentIndex.value = wordRow.index + 1;
+  addWord();
 };
 </script>
 
 <template>
-  <Word v-if="isFinished" :wanted-word="wantedWord" disabled />
-  <Word
-    v-else
-    v-for="wordRow of wordRows"
-    :wanted-word="wantedWord"
-    :disabled="currentIndex !== wordRow.index"
-    :validation-states="wordRow.validationStates"
-    @submit="({ word }) => handleSubmit(wordRow, word)"
-  />
+  <div class="words">
+    <Word v-if="isFinished" :wanted-word="wantedWord" disabled />
+    <Word
+      v-else
+      v-for="(wordRow, index) in wordRows"
+      :wanted-word="wantedWord"
+      :disabled="index < wordRows.length - 1"
+      :validation-states="wordRow.validationStates"
+      @submit="({ word }) => handleSubmit(wordRow, word)"
+    />
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.words {
+  display: flex;
+  flex-flow: column-reverse;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  height: 100vh;
+  gap: 8px;
+}
+</style>

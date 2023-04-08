@@ -8,11 +8,4 @@ import Words from "./components/Words.vue";
   </main>
 </template>
 
-<style scoped>
-.app {
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-</style>
+<style scoped></style>
