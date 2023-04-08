@@ -29,10 +29,13 @@ const props = defineProps<{
 
 <style scoped>
 .character {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 6rem;
   height: 6rem;
   font-size: 4rem;
-  text-align: center;
+  color: white;
   background-color: hsla(199, 85%, 66%, 0.2);
   border: 2px solid hsla(199, 85%, 66%, 0.4);
   transition: background-color 0.2s ease-out, border-color 0.2s ease-out;

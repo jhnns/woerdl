@@ -14,23 +14,34 @@ const emit = defineEmits<{
 
 const input = ref<HTMLInputElement | undefined>(undefined);
 
+const indices = ref(Array.from(props.wantedWord, (_, i) => i));
+const word = ref(" ".repeat(props.wantedWord.length));
+const isFocused = ref(false);
+const activeIndex = ref(0);
 watchEffect(
   () => {
     if (props.disabled === false) {
+      const index = activeIndex.value;
+
       input.value?.focus();
+      requestAnimationFrame(() => {
+        input.value?.setSelectionRange(index, index + 1);
+      });
     }
   },
   { flush: "post" }
 );
-
-const indices = ref(Array.from(props.wantedWord, (_, i) => i));
-const word = ref("");
-const isFocused = ref(false);
 const handleInput = (event: Event) => {
   word.value = (event.target as HTMLInputElement).value.toUpperCase();
+  activeIndex.value++;
+};
+const selectCharacter = (index: number) => {
+  activeIndex.value = index;
+  input.value?.focus();
+  input.value?.setSelectionRange(index, index + 1);
 };
 const handleSubmit = () => {
-  if (word.value.length === props.wantedWord.length) {
+  if (word.value.trim().length === props.wantedWord.length) {
     emit("submit", { word: word.value });
   }
 };
@@ -39,23 +50,26 @@ const handleSubmit = () => {
 <template>
   <form @submit.prevent="handleSubmit">
     <label class="word">
-      <Character
+      <button
         v-for="index in indices"
-        :character="word.charAt(index)"
-        :validation-state="props.validationStates?.[index]"
-        :is-focused="isFocused"
-        :is-active="isFocused && index === word.length"
-      />
+        class="character-button"
+        type="button"
+        :disabled="props.disabled"
+        @click="selectCharacter(index)"
+      >
+        <Character
+          :character="word.charAt(index)"
+          :validation-state="props.validationStates?.[index]"
+          :is-focused="isFocused"
+          :is-active="index === activeIndex"
+        />
+      </button>
       <input
         ref="input"
         class="word-input"
         v-model="word"
-        @focus="isFocused = true"
-        @blur="isFocused = false"
         @input="handleInput"
-        :disabled="props.disabled ?? false"
-        minlength="5"
-        maxlength="5"
+        :disabled="props.disabled"
       />
     </label>
   </form>
@@ -70,5 +84,13 @@ const handleSubmit = () => {
   position: absolute;
   right: 100vw;
   bottom: 100vh;
+}
+
+.character-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
 }
 </style>
