@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive } from "vue";
 import Word from "./Word.vue";
+import Fireworks from "./Fireworks.vue";
 import { ValidationState } from "../game.js";
 import { solvedWords, wantedWord } from "../lib/words.js";
 
@@ -55,14 +56,15 @@ const handleSubmit = (wordRow: WordRow, word: string) => {
 
 <template>
   <div class="words">
-    <Word v-if="isFinished" :wanted-word="wantedWord" disabled />
     <Word
-      v-else
       v-for="(wordRow, index) in wordRows"
       :wanted-word="wantedWord"
       :disabled="index < wordRows.length - 1"
       :validation-states="wordRow.validationStates"
       @submit="({ word }) => handleSubmit(wordRow, word)"
+    />
+    <Fireworks
+      :intensity="isFinished ? Math.pow((1 / wordRows.length) * 2, 2) : 0"
     />
   </div>
 </template>

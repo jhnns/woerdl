@@ -230,6 +230,7 @@ const words = new Set(
 );
 
 const getRandomWord = () => {
+  return "DAMPF";
   const randomIndex = Math.floor(Math.random() * words.size);
   return [...words][randomIndex];
 };
