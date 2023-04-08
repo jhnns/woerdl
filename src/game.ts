@@ -1,5 +1,5 @@
 export enum ValidationState {
-  PositionAndCharacterCorrect = "position-and-character-correct",
-  CharacterCorrect = "character-correct",
-  Incorrect = "incorrect",
+  PositionAndCharacterCorrect = "PositionAndCharacterCorrect",
+  CharacterCorrect = "CharacterCorrect",
+  Incorrect = "Incorrect",
 }

@@ -12,8 +12,20 @@ const emit = defineEmits<{
   (e: "submit", event: { word: string }): void;
 }>();
 
+const input = ref<HTMLInputElement | undefined>(undefined);
+
+watchEffect(
+  () => {
+    if (props.disabled === false) {
+      input.value?.focus();
+    }
+  },
+  { flush: "post" }
+);
+
 const indices = ref(Array.from(props.wantedWord, (_, i) => i));
 const word = ref("");
+const isFocused = ref(false);
 const handleInput = (event: Event) => {
   word.value = (event.target as HTMLInputElement).value.toUpperCase();
 };
@@ -31,10 +43,15 @@ const handleSubmit = () => {
         v-for="index in indices"
         :character="word.charAt(index)"
         :validation-state="props.validationStates?.[index]"
+        :is-focused="isFocused"
+        :is-active="isFocused && index === word.length"
       />
       <input
+        ref="input"
         class="word-input"
         v-model="word"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
         @input="handleInput"
         :disabled="props.disabled ?? false"
         minlength="5"

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import Word from "./Word.vue";
 import { ValidationState } from "../game.js";
-
-const wantedWord = ref("DAMPF");
+import { solvedWords, wantedWord } from "../lib/words.js";
 
 type WordRow = {
   index: number;
@@ -35,15 +34,30 @@ const validateWordRow = ({ word }: WordRow) => {
 
   return validationStates;
 };
+const currentWordRow = computed(() => wordRows[currentIndex.value]);
+const isFinished = computed(() => {
+  return (
+    currentWordRow.value.validationStates?.every(
+      (validationState) =>
+        validationState === ValidationState.PositionAndCharacterCorrect
+    ) === true
+  );
+});
 const handleSubmit = (wordRow: WordRow, word: string) => {
-  currentIndex.value = wordRow.index + 1;
   wordRow.word = word;
   wordRow.validationStates = validateWordRow(wordRow);
+  if (isFinished.value) {
+    solvedWords.add(word);
+    return;
+  }
+  currentIndex.value = wordRow.index + 1;
 };
 </script>
 
 <template>
+  <Word v-if="isFinished" :wanted-word="wantedWord" disabled />
   <Word
+    v-else
     v-for="wordRow of wordRows"
     :wanted-word="wantedWord"
     :disabled="currentIndex !== wordRow.index"

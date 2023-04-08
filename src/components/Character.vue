@@ -4,13 +4,24 @@ import { ValidationState } from "../game.js";
 const props = defineProps<{
   character: string;
   validationState?: ValidationState;
+  isFocused?: boolean;
+  isActive?: boolean;
 }>();
 </script>
 
 <template>
   <div
     class="character"
-    :class="props.validationState && `character--${props.validationState}`"
+    :class="{
+      'character--is-focused': props.isFocused,
+      'character--is-active': props.isActive,
+      'character--position-and-character-correct':
+        props.validationState === ValidationState.PositionAndCharacterCorrect,
+      'character--character-correct':
+        props.validationState === ValidationState.CharacterCorrect,
+      'character--incorrect':
+        props.validationState === ValidationState.Incorrect,
+    }"
   >
     {{ props.character }}
   </div>
@@ -24,6 +35,17 @@ const props = defineProps<{
   text-align: center;
   background-color: hsla(199, 85%, 66%, 0.2);
   border: 2px solid hsla(199, 85%, 66%, 0.4);
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
+}
+
+.character--is-focused {
+  background-color: hsla(199, 85%, 66%, 0.4);
+  border-color: hsla(199, 85%, 66%, 0.6);
+}
+
+.character--is-active {
+  background-color: hsla(199, 83%, 84%, 0.4);
+  border-color: hsla(199, 83%, 84%, 0.6);
 }
 
 .character--position-and-character-correct {
