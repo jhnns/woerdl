@@ -63,9 +63,7 @@ const handleSubmit = (wordRow: WordRow, word: string) => {
       :validation-states="wordRow.validationStates"
       @submit="({ word }) => handleSubmit(wordRow, word)"
     />
-    <Fireworks
-      :intensity="isFinished ? Math.pow((1 / wordRows.length) * 2, 2) : 0"
-    />
+    <Fireworks :intensity="isFinished ? (1 / wordRows.length) * 2 : 0" />
   </div>
 </template>
 

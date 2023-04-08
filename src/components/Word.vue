@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import Character from "./Character.vue";
+import WordInput from "./WordInput.vue";
 import { ValidationState } from "../game.js";
+import { ChangeEvent } from "./WordInput.vue.js";
 
 const props = defineProps<{
   wantedWord: string;
@@ -12,34 +14,20 @@ const emit = defineEmits<{
   (e: "submit", event: { word: string }): void;
 }>();
 
-const input = ref<HTMLInputElement | undefined>(undefined);
-
 const indices = ref(Array.from(props.wantedWord, (_, i) => i));
-const word = ref(" ".repeat(props.wantedWord.length));
+const word = ref("");
 const isFocused = ref(false);
-const activeIndex = ref(0);
-watchEffect(
-  () => {
-    if (props.disabled === false) {
-      const index = activeIndex.value;
+const position = ref(0);
 
-      input.value?.focus();
-      requestAnimationFrame(() => {
-        input.value?.setSelectionRange(index, index + 1);
-      });
-    }
-  },
-  { flush: "post" }
-);
-const handleInput = (event: Event) => {
-  word.value = (event.target as HTMLInputElement).value.toUpperCase();
-  activeIndex.value++;
-};
 const selectCharacter = (index: number) => {
-  activeIndex.value = index;
-  input.value?.focus();
-  input.value?.setSelectionRange(index, index + 1);
+  position.value = index;
 };
+
+const handleWordChange = (event: ChangeEvent) => {
+  word.value = event.word;
+  position.value = event.position;
+};
+
 const handleSubmit = () => {
   if (word.value.trim().length === props.wantedWord.length) {
     emit("submit", { word: word.value });
@@ -61,31 +49,32 @@ const handleSubmit = () => {
           :character="word.charAt(index)"
           :validation-state="props.validationStates?.[index]"
           :is-focused="isFocused"
-          :is-active="index === activeIndex"
+          :is-active="index === position"
         />
       </button>
-      <input
-        ref="input"
-        class="word-input"
-        v-model="word"
-        @input="handleInput"
-        :disabled="props.disabled"
-      />
+      <div class="word-input">
+        <WordInput
+          :length="wantedWord.length"
+          :position="position"
+          :disabled="props.disabled"
+          @change="handleWordChange"
+        />
+      </div>
     </label>
   </form>
 </template>
 
 <style scoped>
 .word {
+  position: relative;
   display: flex;
   gap: 8px;
 }
 .word-input {
   position: absolute;
-  right: 100vw;
-  bottom: 100vh;
+  opacity: 0;
+  font-size: 1rem;
 }
-
 .character-button {
   border: none;
   background: none;
