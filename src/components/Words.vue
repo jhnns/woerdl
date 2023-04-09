@@ -74,7 +74,6 @@ const handleSubmit = (wordRow: WordRow, word: string) => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  height: 100vh;
   gap: 8px;
 }
 </style>
