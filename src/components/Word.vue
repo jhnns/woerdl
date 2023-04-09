@@ -38,6 +38,14 @@ const handleSubmit = () => {
 <template>
   <form @submit.prevent="handleSubmit">
     <label class="word">
+      <div class="word-input">
+        <WordInput
+          :length="wantedWord.length"
+          :position="position"
+          :disabled="props.disabled"
+          @change="handleWordChange"
+        />
+      </div>
       <button
         v-for="index in indices"
         class="character-button"
@@ -52,14 +60,6 @@ const handleSubmit = () => {
           :is-active="index === position"
         />
       </button>
-      <div class="word-input">
-        <WordInput
-          :length="wantedWord.length"
-          :position="position"
-          :disabled="props.disabled"
-          @change="handleWordChange"
-        />
-      </div>
     </label>
   </form>
 </template>
@@ -78,6 +78,7 @@ const handleSubmit = () => {
   top: 0;
   right: 0;
   bottom: 0;
+  pointer-events: none;
 }
 .character-button {
   border: none;

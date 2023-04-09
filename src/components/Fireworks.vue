@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, defineProps, watchEffect, ref } from "vue";
+import { onMounted, watchEffect, ref } from "vue";
 import { Explosion } from "./fireworks/explosion.js";
 import { Render } from "./fireworks/render.js";
 
